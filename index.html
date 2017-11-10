@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Slappin' da bass, mon!</title>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1760017-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'UA-1760017-1');
+	</script>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+	<h1>Slappin' da bass, mon!</h1>
+
+	<img src="https://media.giphy.com/media/XY387jv1Ebbaw/giphy-downsized.gif" alt="Slappin' da bass, mon!">
+
+	<div class="keys"></div>
+
+	<div class="audios"></div>
+
+<script>
+
+	const key_list = 'q w e r t y u i o p a s d f g h j k l z x c v b n m'.split( ' ' );
+
+	const sound_list = [
+		'sounds/bass_mon.mp3',
+		'sounds/bassa.mp3',
+		'sounds/bayus.mp3',
+		'sounds/bess.mp3',
+		'sounds/big_time_slow.mp3',
+		'sounds/big_time.mp3',
+		'sounds/biss.mp3',
+		'sounds/borat.mp3',
+		'sounds/da_da_basss.mp3',
+		'sounds/excited.mp3',
+		'sounds/leprechaun.mp3',
+		'sounds/reggae.mp3',
+		'sounds/slappa.mp3'
+	];
+
+	function addKeys() {
+		const new_key_list = key_list.slice( 0, sound_list.length );
+		const regexp = /sounds\/(.*)\.mp3/;
+		const html = new_key_list.map( function( key, index ) {
+			const sound = sound_list[ index ];
+			let name = sound.match( regexp )[1] || '';
+			name = name.replace( /_/g, ' ' );
+			return `
+				<div data-key="${key}" class="key">
+					<kbd>${key}</kbd>
+					<span class="sound">${name}</span>
+				</div>
+			`;
+		} ).join( '' );
+		document.querySelector( '.keys' ).innerHTML = html;
+	}
+
+	function addSounds() {
+		const html = sound_list.map( function( sound, index ) {
+			const key = key_list[ index ];
+			return `
+				<audio data-key="${key}" src="${sound}"></audio>
+			`;
+		} ).join( '' );
+		document.querySelector( '.audios' ).innerHTML = html;
+	}
+
+	function playSound( e ) {
+		const key = document.querySelector( `.key[data-key="${e.key}"]` );
+		const audio = document.querySelector( `audio[data-key="${e.key}"]` );
+		if ( ! audio ) return; // stop functon from running
+		audios.forEach( _audio => _audio.pause() ); // pause all
+		audio.currentTime = 0; // rewind to the start
+		audio.play();
+		key.classList.add( 'playing' );
+	}
+
+	function removeTransition( e ) {
+		if ( e.propertyName !== 'transform' ) return; // skip it if not transform
+		this.classList.remove( 'playing' );
+	}
+
+	addKeys();
+	addSounds();
+
+	const audios = document.querySelectorAll( `audio` );
+	const keys = document.querySelectorAll( '.key' );
+
+	keys.forEach( key => key.addEventListener( 'transitionend', removeTransition ) );
+	keys.forEach( key => key.addEventListener( 'click', () => playSound( { key: key.getAttribute( 'data-key' ) } ) ) );
+	window.addEventListener( 'keydown', playSound );
+
+
+</script>
+
+</body>
+</html>
